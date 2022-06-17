@@ -103,7 +103,7 @@ def ruleta_greedy(proba):#Crea un arreglo que se repite m veces una posicion, si
     return seleccion
 
 def greedy(matriz,profit,peso):
-    i=1
+    i=0
     X=[]
     X=var_decision(X,profit)
     proba=[]
@@ -124,8 +124,10 @@ def PoblacionInicial(matriz,profit,peso,poblacion):
     pob=[]
     start=time.time()
     while i<poblacion:
-        pob.append(greedy(matriz,profit,peso))
+        aux=greedy(matriz,profit,peso)
+        pob.append(aux)
         i=i+1
+    print(pob[0])
     end=time.time()
     for i in pob:
         print(i)
