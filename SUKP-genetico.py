@@ -92,6 +92,27 @@ def probabilidad(prob,profit,matriz):#genera probabilidades segun profit/cantida
         i=i+1
     return prob
 
+def probabilidad_poblacion(poblacion,matriz,profit):
+    i=0
+    proba=[]
+    while i<len(poblacion)-1:
+        aux=0
+        aux=FO(poblacion[i],matriz,profit)
+        if aux>100000 and aux<=1000000:
+            aux=aux/10000
+        elif aux>10000 and aux<=100000:
+            aux=aux/1000
+        elif aux>1000 and aux<=10000:
+            aux=aux/100
+        elif aux>100 and aux<=1000:
+            aux=aux/10
+        elif aux>10:
+            aux=aux-2
+        proba.append(aux)
+        i=i+1
+    return proba
+
+
 def ruleta_greedy(proba):#Crea un arreglo que se repite m veces una posicion, sirve para seleccionar 1 de las posiciones, la cual sera elegida a la hora de seleccionar una tarea
     probab=[]
     i=0
@@ -162,7 +183,12 @@ def Solver(A,B,Size,Tamaño):
     global Pob
     while True:
         if len(NewPob) == Tamaño:
+            proba=[]
             Pob = NewPob[:]
+            proba = probabilidad_poblacion(Pob[:],A,B)
+            seleccion1=ruleta_greedy(proba[:])
+            seleccion2=ruleta_greedy(proba[:])
+
         else:
             posible = ruleta_greedy(proba)
         break
