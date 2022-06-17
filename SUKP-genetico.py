@@ -1,24 +1,56 @@
+from cmath import e
 import numpy as np
 import random
 import time
 
 
 Semilla=0
-A=np.loadtxt("proyecto\matriz600.txt",dtype="int")# matriz con las m tareas y n subtareas, con n=m
-B=np.loadtxt("proyecto\profile600.txt",dtype="int") #profit en [0][x], peso/costo en [1][x]
-print(A[0][0])
-print(len(B[0]))
+A=np.loadtxt("matriz600.txt",dtype="int")# matriz con las m tareas y n subtareas, con n=m
+B=np.loadtxt("profile600.txt",dtype="int") # profit en [0][x], peso/costo en [1][x]
+# print(A[0][0])
+# print(len(B[0]))
 def var_decision(X,profit):
     if len(X) ==0:
         X=[0]*len(profit[0])
     return X
 
-def FO(decision,posicion,matriz,profit):#calcula la Funcion Objetivo con dicha decision
+def FO(decision,matriz,profit):#calcula la Funcion Objetivo con dicha decision
     i=0
     aux=0
+    print(decision)
     while i<len(decision)-1:
-        aux=(profit[0][i]*decision[i]*matriz[posicion][i])+aux
+        j=0
+        while j < len(decision) - 1:
+            aux += (profit[0][i]*decision[i]*matriz[i][j])
+            j += 1
         i=i+1
+    return aux
+
+def FO2(decision,matriz,profit):#calcula la Funcion Objetivo con dicha decision
+    i=0
+    aux=0
+    SubTask = []
+    print(decision)
+    while i<len(decision)-1:
+        j=0
+        while j < len(decision) - 1:
+            if len(SubTask) == 0 and decision[i] == 1:
+                print("entre")
+                aux += profit[0][i]*decision[i]*matriz[i][j]
+                print(aux)
+                SubTask.append(j)
+            else:
+                igual = False
+                for index in SubTask:
+                    if index == j:
+                        igual = True
+                        break
+                if igual == False:
+                    aux += profit[0][i]*decision[i]*matriz[i][j]
+                    SubTask.append(j)
+            j += 1
+        i=i+1
+    # print(SubTask)
     return aux
 
 def restriccion(decision,peso,matriz,profit):#calcula si dicha decision(variable binaria) cumple la restriccion
@@ -77,15 +109,14 @@ def greedy(matriz,profit,peso):
     proba=[]
     proba=probabilidad(proba,profit,matriz)
     global Semilla
-    while True:
-        aux=ruleta_greedy(proba)
+    while i<10:
+        aux=ruleta_greedy(proba[:])
         X[aux]=1
-        if restriccion(X,peso,matriz,profit)==1:
-            break
-        elif restriccion(X,peso,matriz,profit)==0:
-            print("no hay solucion")
+        if restriccion(X[:],peso,matriz,profit)==1:
             i=i+1
-            break
+        elif restriccion(X[:],peso,matriz,profit)==0:
+            X[aux]=0
+            return X
     return X
 
 def PoblacionInicial(matriz,profit,peso,poblacion):
@@ -96,8 +127,12 @@ def PoblacionInicial(matriz,profit,peso,poblacion):
         pob.append(greedy(matriz,profit,peso))
         i=i+1
     end=time.time()
-    print("poblacion "+str(len(pob)))
-    print("tiempo greedy "+str(end-start))
+    for i in pob:
+        print(i)
+    # print("poblacion "+str(len(pob)))
+    # print("tiempo greedy "+str(end-start))
+    # print("FO: ", FO(pob[0],A,B))
+    # print("FO2: ", FO2(pob[0],A,B))
         
 
-PoblacionInicial(A,B,109943,100)
+PoblacionInicial(A,B,109943,5)
