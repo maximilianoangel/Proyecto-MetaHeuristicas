@@ -71,21 +71,20 @@ def ruleta_greedy(proba):#Crea un arreglo que se repite m veces una posicion, si
     return seleccion
 
 def greedy(matriz,profit,peso):
-    i=1
+    i=0
     X=[]
     X=var_decision(X,profit)
     proba=[]
     proba=probabilidad(proba,profit,matriz)
     global Semilla
-    while True:
-        aux=ruleta_greedy(proba)
+    while i<10:
+        aux=ruleta_greedy(proba[:])
         X[aux]=1
-        if restriccion(X,peso,matriz,profit)==1:
-            break
-        elif restriccion(X,peso,matriz,profit)==0:
-            print("no hay solucion")
+        if restriccion(X[:],peso,matriz,profit)==1:
             i=i+1
-            break
+        elif restriccion(X[:],peso,matriz,profit)==0:
+            X[aux]=0
+            return X
     return X
 
 def PoblacionInicial(matriz,profit,peso,poblacion):
@@ -93,8 +92,10 @@ def PoblacionInicial(matriz,profit,peso,poblacion):
     pob=[]
     start=time.time()
     while i<poblacion:
-        pob.append(greedy(matriz,profit,peso))
+        aux=greedy(matriz,profit,peso)
+        pob.append(aux)
         i=i+1
+    print(pob[0])
     end=time.time()
     print("poblacion "+str(len(pob)))
     print("tiempo greedy "+str(end-start))
