@@ -14,6 +14,7 @@ BestFO = 0
 BestPo = []
 BestWeight = 999999
 Pob = []
+NewPob = []
 def var_decision(X,profit):
     if len(X) ==0:
         X=[0]*len(profit[0])
@@ -58,6 +59,26 @@ def Weight(decision, matriz, profit):
             j += 1
         i += 1
     return weight
+
+def Ruleta(Tamaño, profit, matriz):
+    i = 0
+    global NewPob
+    global Semilla
+    probabilidad = []
+    proba = []
+    proba = probabilidad(proba, profit, matriz)
+    while i<len(proba)-1:
+        j=0
+        m=proba[i]
+        while j<m-1:
+            probabilidad.append(i)
+            j=j+1
+        i=i+1
+    random.seed(Semilla)
+    aux=random.randint(0,len(probabilidad)-1)
+    Semilla=Semilla+1
+    seleccion=probabilidad[aux]
+    pass
 
 def restriccion(decision,peso,matriz,profit):#calcula si dicha decision(variable binaria) cumple la restriccion
     i=0
@@ -149,6 +170,7 @@ def PoblacionInicial(matriz,profit,peso,poblacion):
         elif MejorFOPob == BestFO and MenorWeight < BestWeight:
             BestPo = i
             BestWeight = MenorWeight
+    Pob = 0
     # print("FO2: ", FO2(i,A,B))
     # print("poblacion "+str(len(pob)))
     # print("tiempo greedy "+str(end-start))
@@ -157,6 +179,10 @@ def PoblacionInicial(matriz,profit,peso,poblacion):
 def Solver(A,B,Size,Tamaño):
     PoblacionInicial(A,B,Size,Tamaño)
     while True:
+        if len(NewPob) == Tamaño:
+            Pob = NewPob[:]
+        else:
+            posible = Ruleta(Tamaño,B,A)
         break
 
 
