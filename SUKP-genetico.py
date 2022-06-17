@@ -60,26 +60,6 @@ def Weight(decision, matriz, profit):
         i += 1
     return weight
 
-def Ruleta(Tamaño, profit, matriz):
-    i = 0
-    global NewPob
-    global Semilla
-    probabilidad = []
-    proba = []
-    proba = probabilidad(proba, profit, matriz)
-    while i<len(proba)-1:
-        j=0
-        m=proba[i]
-        while j<m-1:
-            probabilidad.append(i)
-            j=j+1
-        i=i+1
-    random.seed(Semilla)
-    aux=random.randint(0,len(probabilidad)-1)
-    Semilla=Semilla+1
-    seleccion=probabilidad[aux]
-    pass
-
 def restriccion(decision,peso,matriz,profit):#calcula si dicha decision(variable binaria) cumple la restriccion
     i=0
     aux=0
@@ -129,12 +109,10 @@ def ruleta_greedy(proba):#Crea un arreglo que se repite m veces una posicion, si
     seleccion=probab[aux]
     return seleccion
 
-def greedy(matriz,profit,peso):
+def greedy(matriz,profit,peso,proba):
     i=0
     X=[]
     X=var_decision(X,profit)
-    proba=[]
-    proba=probabilidad(proba,profit,matriz)
     global Semilla
     while i<10:
         aux=ruleta_greedy(proba[:])
@@ -146,7 +124,7 @@ def greedy(matriz,profit,peso):
             return X
     return X
 
-def PoblacionInicial(matriz,profit,peso,poblacion):
+def PoblacionInicial(matriz,profit,peso,poblacion,proba):
     i=0
     global Pob
     global BestFO
@@ -154,7 +132,7 @@ def PoblacionInicial(matriz,profit,peso,poblacion):
     global BestWeight
     start=time.time()
     while i<poblacion:
-        aux=greedy(matriz,profit,peso)
+        aux=greedy(matriz,profit,peso,proba)
         Pob.append(aux)
         i=i+1
     end=time.time()
@@ -177,12 +155,16 @@ def PoblacionInicial(matriz,profit,peso,poblacion):
         
 
 def Solver(A,B,Size,Tamaño):
-    PoblacionInicial(A,B,Size,Tamaño)
+    proba = []
+    proba = probabilidad(proba, B, A)
+    PoblacionInicial(A,B,Size,Tamaño,proba[:])
+    global NewPob
+    global Pob
     while True:
         if len(NewPob) == Tamaño:
             Pob = NewPob[:]
         else:
-            posible = Ruleta(Tamaño,B,A)
+            posible = ruleta_greedy(proba)
         break
 
 
