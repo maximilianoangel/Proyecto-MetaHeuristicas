@@ -19,18 +19,6 @@ def var_decision(X,profit):
         X=[0]*len(profit[0])
     return X
 
-# def FO(decision,matriz,profit):#calcula la Funcion Objetivo con dicha decision
-#     i=0
-#     aux=0
-#     # print(decision)
-#     while i<len(decision)-1:
-#         j=0
-#         while j < len(decision) - 1:
-#             aux += (profit[0][i]*decision[i]*matriz[i][j])
-#             j += 1
-#         i=i+1
-#     return aux
-
 def FO(decision,matriz,profit):#calcula la Funcion Objetivo con dicha decision
     i=0
     aux=0
