@@ -1,4 +1,5 @@
 from cmath import e
+from glob import glob
 import numpy as np
 import random
 import time
@@ -9,37 +10,43 @@ A=np.loadtxt("matriz600.txt",dtype="int")# matriz con las m tareas y n subtareas
 B=np.loadtxt("profile600.txt",dtype="int") # profit en [0][x], peso/costo en [1][x]
 # print(A[0][0])
 # print(len(B[0]))
+BestFO = 0
+BestPo = []
+BestWeight = 999999
+Pob = []
 def var_decision(X,profit):
     if len(X) ==0:
         X=[0]*len(profit[0])
     return X
 
+# def FO(decision,matriz,profit):#calcula la Funcion Objetivo con dicha decision
+#     i=0
+#     aux=0
+#     # print(decision)
+#     while i<len(decision)-1:
+#         j=0
+#         while j < len(decision) - 1:
+#             aux += (profit[0][i]*decision[i]*matriz[i][j])
+#             j += 1
+#         i=i+1
+#     return aux
+
 def FO(decision,matriz,profit):#calcula la Funcion Objetivo con dicha decision
     i=0
     aux=0
-    print(decision)
-    while i<len(decision)-1:
-        j=0
-        while j < len(decision) - 1:
-            aux += (profit[0][i]*decision[i]*matriz[i][j])
-            j += 1
-        i=i+1
-    return aux
-
-def FO2(decision,matriz,profit):#calcula la Funcion Objetivo con dicha decision
-    i=0
-    aux=0
     SubTask = []
-    print(decision)
+    # print(decision)
     while i<len(decision)-1:
         j=0
         while j < len(decision) - 1:
+            # print(len(SubTask))
+            # print(decision[i])
             if len(SubTask) == 0 and decision[i] == 1:
-                print("entre")
+                # print("entre")
                 aux += profit[0][i]*decision[i]*matriz[i][j]
-                print(aux)
+                # print(aux)
                 SubTask.append(j)
-            else:
+            elif decision[i] == 1:
                 igual = False
                 for index in SubTask:
                     if index == j:
@@ -52,6 +59,17 @@ def FO2(decision,matriz,profit):#calcula la Funcion Objetivo con dicha decision
         i=i+1
     # print(SubTask)
     return aux
+
+def Weight(decision, matriz, profit):
+    i = 0
+    weight = 0
+    while i<len(decision)-1:
+        j=0
+        while j<len(decision)-1:
+            weight += profit[1][j]*matriz[i][j]*decision[j]
+            j += 1
+        i += 1
+    return weight
 
 def restriccion(decision,peso,matriz,profit):#calcula si dicha decision(variable binaria) cumple la restriccion
     i=0
@@ -121,20 +139,40 @@ def greedy(matriz,profit,peso):
 
 def PoblacionInicial(matriz,profit,peso,poblacion):
     i=0
-    pob=[]
+    global Pob
+    global BestFO
+    global BestPo
+    global BestWeight
     start=time.time()
     while i<poblacion:
         aux=greedy(matriz,profit,peso)
-        pob.append(aux)
+        Pob.append(aux)
         i=i+1
-    print(pob[0])
     end=time.time()
-    for i in pob:
-        print(i)
+    for i in Pob:
+        # print(i)
+        MejorFOPob = FO(i,A,B)
+        MenorWeight = Weight(i, matriz, profit)
+        # print("FO: ", MejorFOPob)
+        if MejorFOPob > BestFO:
+            BestFO = MejorFOPob
+            BestPo = i
+            BestWeight = MenorWeight
+        elif MejorFOPob == BestFO and MenorWeight < BestWeight:
+            BestPo = i
+            BestWeight = MenorWeight
+    # print("FO2: ", FO2(i,A,B))
     # print("poblacion "+str(len(pob)))
     # print("tiempo greedy "+str(end-start))
-    # print("FO: ", FO(pob[0],A,B))
-    # print("FO2: ", FO2(pob[0],A,B))
         
 
-PoblacionInicial(A,B,109943,5)
+def Solver(A,B,Size,Tamaño):
+    PoblacionInicial(A,B,Size,Tamaño)
+    while True:
+        break
+
+
+Solver(A,B,109943,4)
+print("BestFO: ", BestFO)
+print("Weight: ", BestWeight)
+print(BestPo)
