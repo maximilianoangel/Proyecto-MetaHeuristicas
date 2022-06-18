@@ -1,5 +1,3 @@
-from cmath import e
-from glob import glob
 import numpy as np
 import random
 import time
@@ -11,22 +9,28 @@ B=np.loadtxt("profile600.txt",dtype="int") # profit en [0][x], peso/costo en [1]
 # print(A[0][0])
 # print(len(B[0]))
 BestFO = 0
+BestLocalFO = 0
 BestPo = []
+BestLocalPO = []
 BestWeight = 999999
+BestLocalWeight = 999999
 Pob = []
 NewPob = []
+Peso = 109943
+TamañoPo = 10
+
 def var_decision(X,profit):
-    if len(X) ==0:
+    if len(X) == 0:
         X=[0]*len(profit[0])
     return X
 
-def FO(decision,matriz,profit):#calcula la Funcion Objetivo con dicha decision
-    i=0
-    aux=0
+def FO(decision,matriz,profit): # calcula la Funcion Objetivo con dicha decision
+    i = 0
+    aux = 0
     SubTask = []
     # print(decision)
-    while i<len(decision)-1:
-        j=0
+    while i < len(decision) - 1:
+        j = 0
         while j < len(decision) - 1:
             # print(len(SubTask))
             # print(decision[i])
@@ -49,7 +53,7 @@ def FO(decision,matriz,profit):#calcula la Funcion Objetivo con dicha decision
     # print(SubTask)
     return aux
 
-def Weight(decision, matriz, profit):
+def Weight(decision, matriz, profit): # Calcula el peso de las tareas
     i = 0
     weight = 0
     while i<len(decision)-1:
@@ -145,7 +149,7 @@ def greedy(matriz,profit,peso,proba):
             return X
     return X
 
-def PoblacionInicial(matriz,profit,peso,poblacion,proba):
+def PoblacionInicial(matriz,profit,peso,poblacion,proba): # Genera la poblacion inicial
     i=0
     global Pob
     global BestFO
@@ -169,11 +173,90 @@ def PoblacionInicial(matriz,profit,peso,poblacion,proba):
         elif MejorFOPob == BestFO and MenorWeight < BestWeight:
             BestPo = i
             BestWeight = MenorWeight
-    Pob = 0
+    # Pob = 0
     # print("FO2: ", FO2(i,A,B))
     # print("poblacion "+str(len(pob)))
     # print("tiempo greedy "+str(end-start))
-        
+
+def Mutacion(hijo): # Probabilidad de 1% de que haya motacion en un solo bit
+    global Semilla
+    random.seed(Semilla)
+    num = random.randint(0, 99)
+    Semilla += 1
+    if num == 17:
+        random.seed(Semilla)
+        pos=random.randint(0, len(hijo) -1)
+        Semilla += 1
+        if hijo[pos] == 1:
+            hijo[pos] = 0
+        else:
+            hijo[pos] = 1
+    return hijo
+
+
+def Cruzamiento(seleccion1, seleccion2): # Realiza el cruzamiento y devuelve a dos hijos
+    hijo1=[]
+    hijo2=[]
+    i = 0
+    global BestLocalFO
+    global BestLocalPO
+    global BestLocalWeight
+    global Semilla
+    random.seed(Semilla)
+    particion=random.randint(0,len(seleccion1)-1)
+    Semilla=Semilla+1
+    while i < len(seleccion1):
+        if i <= particion:
+            hijo1.append(seleccion1[i])
+            hijo2.append(seleccion2[i])
+        else:
+            hijo1.append(seleccion2[i])
+            hijo2.append(seleccion1[i])
+        i += 1
+    hijo1 = Mutacion(hijo1)
+    hijo2 = Mutacion(hijo2)
+    proba = []
+    proba = probabilidad(proba, B, A)
+    if restriccion(hijo1[:], Peso, A, B) == 1:
+            hijo1 = greedy(A , B, Peso, proba)
+    if restriccion(hijo2[:], Peso, A, B) == 1:
+            hijo2 = greedy(A, B, Peso, proba)
+    hijo1FO = FO(hijo1, A, B)
+    hijo2FO = FO(hijo1, A, B)
+    Hijo1Weight = Weight(hijo1, A, B)
+    Hijo2Weight = Weight(hijo2, A, B)
+    if hijo1FO > BestLocalFO:
+        BestLocalFO = hijo1FO
+        BestLocalPO = hijo1
+        BestWeight = Hijo1Weight
+    if hijo2FO > BestLocalFO:
+        BestLocalFO = hijo2FO
+        BestLocalPO = hijo1
+        BestLocalWeight = Hijo2Weight
+    return hijo1, hijo2
+
+def Torneo(Tamaño): # Selecciona a un padre
+    array = []
+    Mejor = []
+    global Semilla
+    random.seed(Semilla)
+    for i in range(0, int(Tamaño*0.3)):
+        random.seed(Semilla)
+        num = random.randint(0,Tamaño-1)
+        Semilla += 1
+        if len(array) == 0:
+            array.append(num)
+            Mejor.append(FO(Pob[num], A, B))
+        else:
+            igual = False
+            for j in array:
+                if j == num:
+                    igual = True
+                    break
+            if igual == False:
+                array.append(num)
+                Mejor.append(FO(Pob[num], A, B))
+    return Pob[array[Mejor.index(max(Mejor))]]
 
 def Solver(A,B,Size,Tamaño):
     proba = []
@@ -181,20 +264,47 @@ def Solver(A,B,Size,Tamaño):
     PoblacionInicial(A,B,Size,Tamaño,proba[:])
     global NewPob
     global Pob
+    global BestFO
+    global BestLocalFO
+    global BestPo
+    global BestLocalPO
+    global BestWeight
+    global BestLocalWeight
     while True:
         if len(NewPob) == Tamaño:
-            proba=[]
-            Pob = NewPob[:]
-            proba = probabilidad_poblacion(Pob[:],A,B)
-            seleccion1=ruleta_greedy(proba[:])
-            seleccion2=ruleta_greedy(proba[:])
-
+            # proba=[]
+            # Pob = NewPob[:]
+            # proba = probabilidad_poblacion(Pob[:],A,B)
+            # seleccion1=ruleta_greedy(proba[:])
+            # seleccion2=ruleta_greedy(proba[:])
+            # print(seleccion1)
+            # print(seleccion2)
+            Prob = NewPob[:]
+            NewPob = []
+            if BestLocalFO > BestFO:
+                BestFO = BestLocalFO
+                BestPo = BestLocalPO
+                BestWeight = BestLocalWeight
+            # elif BestLocalFO == BestFO and BestLocalWeight < BestWeight:
+            #     BestPo = BestLocalPO
+            #     BestWeight = BestLocalWeight
+            print("Lleggué")
+            break # Quitar esto para que hayan mas generaciones
         else:
-            posible = ruleta_greedy(proba)
-        break
+            # NewPob = ruleta_greedy(proba)
+            # break
+            seleccion1 = Torneo(Tamaño)
+            seleccion2 = Torneo(Tamaño)
+            # print(seleccion1)
+            # print(seleccion2)
+            hijos = Cruzamiento(seleccion1[:], seleccion2[:])
+            NewPob.append(hijos[0])
+            NewPob.append(hijos[1])
 
 
-Solver(A,B,109943,4)
+Solver(A,B,Peso,TamañoPo)
 print("BestFO: ", BestFO)
 print("Weight: ", BestWeight)
 print(BestPo)
+
+# Falta que haya un tope de generaciones o hasta que converja, ver el tema del peso que no cambia
