@@ -228,7 +228,7 @@ def Cruzamiento(seleccion1, seleccion2): # Realiza el cruzamiento y devuelve a d
     if hijo1FO > BestLocalFO:
         BestLocalFO = hijo1FO
         BestLocalPO = hijo1
-        BestWeight = Hijo1Weight
+        BestLocalWeight = Hijo1Weight
     if hijo2FO > BestLocalFO:
         BestLocalFO = hijo2FO
         BestLocalPO = hijo1
@@ -270,8 +270,11 @@ def Solver(A,B,Size,Tamaño):
     global BestLocalPO
     global BestWeight
     global BestLocalWeight
+    count = 0
     while True:
         if len(NewPob) == Tamaño:
+            if count == 30:
+                break
             # proba=[]
             # Pob = NewPob[:]
             # proba = probabilidad_poblacion(Pob[:],A,B)
@@ -279,17 +282,16 @@ def Solver(A,B,Size,Tamaño):
             # seleccion2=ruleta_greedy(proba[:])
             # print(seleccion1)
             # print(seleccion2)
-            Prob = NewPob[:]
+            Pob = NewPob[:]
             NewPob = []
             if BestLocalFO > BestFO:
                 BestFO = BestLocalFO
                 BestPo = BestLocalPO
                 BestWeight = BestLocalWeight
+            count += 1
             # elif BestLocalFO == BestFO and BestLocalWeight < BestWeight:
             #     BestPo = BestLocalPO
             #     BestWeight = BestLocalWeight
-            print("Lleggué")
-            break # Quitar esto para que hayan mas generaciones
         else:
             # NewPob = ruleta_greedy(proba)
             # break
@@ -307,4 +309,4 @@ print("BestFO: ", BestFO)
 print("Weight: ", BestWeight)
 print(BestPo)
 
-# Falta que haya un tope de generaciones o hasta que converja, ver el tema del peso que no cambia
+# Falta que haya un tope de generaciones o hasta que converja
