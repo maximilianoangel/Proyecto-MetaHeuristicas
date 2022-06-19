@@ -17,7 +17,7 @@ BestLocalWeight = 999999
 Pob = []
 NewPob = []
 Peso = 109943
-TamañoPo = 10
+TamañoPo = 100
 
 def var_decision(X,profit):
     if len(X) == 0:
@@ -178,7 +178,7 @@ def Mutacion(hijo): # Probabilidad de 1% de que haya motacion en un solo bit
     return hijo
 
 
-def Cruzamiento(seleccion1, seleccion2): # Realiza el cruzamiento y devuelve a dos hijos
+def Cruzamiento(seleccion1, seleccion2,matriz,profit): # Realiza el cruzamiento y devuelve a dos hijos
     hijo1=[]
     hijo2=[]
     i = 0
@@ -186,6 +186,8 @@ def Cruzamiento(seleccion1, seleccion2): # Realiza el cruzamiento y devuelve a d
     global BestLocalPO
     global BestLocalWeight
     global Semilla
+    sel1=seleccion1[:]
+    sel2=seleccion2[:]
     random.seed(Semilla)
     particion=random.randint(0,len(seleccion1)-1)
     Semilla=Semilla+1
@@ -199,16 +201,22 @@ def Cruzamiento(seleccion1, seleccion2): # Realiza el cruzamiento y devuelve a d
         i += 1
     hijo1 = Mutacion(hijo1)
     hijo2 = Mutacion(hijo2)
-    proba = []
-    proba = probabilidad(proba, B, A)
-    if restriccion(hijo1[:], Peso, A, B) == 1:
-            hijo1 = greedy(A , B, Peso, proba)
-    if restriccion(hijo2[:], Peso, A, B) == 1:
-            hijo2 = greedy(A, B, Peso, proba)
-    hijo1FO = FO(hijo1, A, B)
-    hijo2FO = FO(hijo1, A, B)
-    Hijo1Weight = Weight(hijo1, A, B)
-    Hijo2Weight = Weight(hijo2, A, B)
+    padre1=FO(sel1,matriz,profit)
+    padre2=FO(sel2,matriz,profit)
+    if restriccion(hijo1[:], Peso, matriz, profit) == 0:
+        if padre1<=padre2:
+            hijo1 = sel2[:]
+        else:
+            hijo1=sel1[:]
+    if restriccion(hijo2[:], Peso, matriz, profit) == 0:
+        if padre1<=padre2:
+            hijo2 = sel2[:]
+        else:
+            hijo2=sel1[:]
+    hijo1FO = FO(hijo1, matriz, profit)
+    hijo2FO = FO(hijo1, matriz, profit)
+    Hijo1Weight = Weight(hijo1, matriz, profit)
+    Hijo2Weight = Weight(hijo2, matriz, profit)
     if hijo1FO > BestLocalFO:
         BestLocalFO = hijo1FO
         BestLocalPO = hijo1
@@ -219,7 +227,7 @@ def Cruzamiento(seleccion1, seleccion2): # Realiza el cruzamiento y devuelve a d
         BestLocalWeight = Hijo2Weight
     return hijo1, hijo2
 
-def Torneo(Tamaño): # Selecciona a un padre
+def Torneo(Tamaño,matriz,profit): # Selecciona a un padre
     array = []
     Mejor = []
     global Semilla
@@ -230,7 +238,7 @@ def Torneo(Tamaño): # Selecciona a un padre
         Semilla += 1
         if len(array) == 0:
             array.append(num)
-            Mejor.append(FO(Pob[num], A, B))
+            Mejor.append(FO(Pob[num], matriz, profit))
         else:
             igual = False
             for j in array:
@@ -239,7 +247,7 @@ def Torneo(Tamaño): # Selecciona a un padre
                     break
             if igual == False:
                 array.append(num)
-                Mejor.append(FO(Pob[num], A, B))
+                Mejor.append(FO(Pob[num], matriz, profit))
     return Pob[array[Mejor.index(max(Mejor))]]
 
 def Solver(A,B,Size,Tamaño):
@@ -282,11 +290,11 @@ def Solver(A,B,Size,Tamaño):
         else:
             # NewPob = ruleta_greedy(proba)
             # break
-            seleccion1 = Torneo(Tamaño)
-            seleccion2 = Torneo(Tamaño)
+            seleccion1 = Torneo(Tamaño,A,B)
+            seleccion2 = Torneo(Tamaño,A,B)
             # print(seleccion1)
             # print(seleccion2)
-            hijos = Cruzamiento(seleccion1[:], seleccion2[:])
+            hijos = Cruzamiento(seleccion1[:], seleccion2[:],A,B)
             NewPob.append(hijos[0])
             NewPob.append(hijos[1])
         generacion=generacion+1
