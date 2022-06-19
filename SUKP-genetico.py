@@ -240,7 +240,11 @@ def Torneo(Tamaño): # Selecciona a un padre
 def Solver(A,B,Size,Tamaño):
     proba = []
     proba = probabilidad(proba, B, A)
+    generacion=0
+    start=time.time()
     PoblacionInicial(A,B,Size,Tamaño,proba[:])
+    end=time.time()
+    print("El greedy con tamaño " +str(len(B[0]))+" se demoro: "+str(end-start)+" segundos")
     global NewPob
     global Pob
     global BestFO
@@ -250,7 +254,7 @@ def Solver(A,B,Size,Tamaño):
     global BestWeight
     global BestLocalWeight
     count = 0
-    while True:
+    while generacion<100:
         if len(NewPob) == Tamaño:
             if count == 30:
                 break
@@ -280,11 +284,18 @@ def Solver(A,B,Size,Tamaño):
             hijos = Cruzamiento(seleccion1[:], seleccion2[:])
             NewPob.append(hijos[0])
             NewPob.append(hijos[1])
+        generacion=generacion+1
 
-
+start=time.time()
 Solver(A,B,Peso,TamañoPo)
+end=time.time()
+print("En total el algoritmo genetico(incluido el greedy) con tamaño "+ str(len(B[0]))+" se demoro: "+str(end-start)+" segundos")
 print("BestFO: ", BestFO)
 print("Weight: ", BestWeight)
+print(len(BestPo))
 print(BestPo)
+resultado_esperado=[0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]
+print("Resultado FO esperado: "+str(FO(resultado_esperado,A,B)))
+print("Resultado peso esperado: "+str(Weight(resultado_esperado,A,B)))
 
 # Falta que haya un tope de generaciones o hasta que converja
