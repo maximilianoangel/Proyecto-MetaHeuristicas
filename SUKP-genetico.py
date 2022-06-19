@@ -27,30 +27,35 @@ def var_decision(X,profit):
 def FO(decision,matriz,profit): # calcula la Funcion Objetivo con dicha decision
     i = 0
     aux = 0
-    SubTask = []
+    #SubTask = []
     # print(decision)
-    while i < len(decision) - 1:
-        j = 0
-        while j < len(decision) - 1:
-            # print(len(SubTask))
-            # print(decision[i])
-            if len(SubTask) == 0 and decision[i] == 1:
-                # print("entre")
-                aux += profit[0][i]*decision[i]*matriz[i][j]
-                # print(aux)
-                SubTask.append(j)
-            elif decision[i] == 1:
-                igual = False
-                for index in SubTask:
-                    if index == j:
-                        igual = True
-                        break
-                if igual == False:
-                    aux += profit[0][i]*decision[i]*matriz[i][j]
-                    SubTask.append(j)
-            j += 1
-        i=i+1
+    #while i < len(decision) - 1:
+     #   j = 0
+      #  while j < len(decision) - 1:
+       #     # print(len(SubTask))
+        #    # print(decision[i])
+         #   if len(SubTask) == 0 and decision[i] == 1:
+          #      # print("entre")
+           #     aux += profit[0][i]*decision[i]*matriz[i][j]
+            #    # print(aux)
+             #   SubTask.append(j)
+           # elif decision[i] == 1:
+            #    igual = False
+             #   for index in SubTask:
+              #      if index == j:
+               #         igual = True
+                #        break
+                #if igual == False:
+                 #   aux += profit[0][i]*decision[i]*matriz[i][j]
+                  #  SubTask.append(j)
+            #j += 1
+        #i=i+1
     # print(SubTask)
+    #return aux
+
+    while i<len(profit[0])-1:
+        aux=aux+(decision[i]*profit[0][i])
+        i=i+1
     return aux
 
 def Weight(decision, matriz, profit): # Calcula el peso de las tareas
@@ -59,7 +64,7 @@ def Weight(decision, matriz, profit): # Calcula el peso de las tareas
     while i<len(decision)-1:
         j=0
         while j<len(decision)-1:
-            weight += profit[1][i]*matriz[i][j]*decision[i]
+            weight += profit[1][j]*matriz[i][j]*decision[j]
             j += 1
         i += 1
     return weight
