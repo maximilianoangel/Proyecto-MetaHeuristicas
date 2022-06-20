@@ -59,7 +59,7 @@ def FO(decision,matriz,profit): # calcula la Funcion Objetivo con dicha decision
     return aux
 
 def Weight(decision, matriz, profit): # Calcula el peso de las tareas
-    j = 0
+    i = 0
     weight = 0
     # while i<len(decision)-1:
     #     j=0
@@ -70,28 +70,49 @@ def Weight(decision, matriz, profit): # Calcula el peso de las tareas
     # return weight
     SubTask = []
     # print(decision)
-    while j < len(decision) - 1:
-        i = 0
-        while i < len(decision) - 1:
+    # while j < len(decision) - 1:
+    #     i = 0
+    #     while i < len(decision) - 1:
+    #         # print(len(SubTask))
+    #         # print(decision[i])
+    #         if len(SubTask) == 0 and decision[i] == 1:
+    #             # print("entre")
+    #             weight += profit[1][i]*decision[i]*matriz[i][j]
+    #             # print(weight)
+    #             SubTask.append(i)
+    #         elif decision[i] == 1:
+    #             igual = False
+    #             for index in SubTask:
+    #                 if index == i:
+    #                    igual = True
+    #                    break
+    #             if igual == False:
+    #                weight += profit[1][i]*decision[i]*matriz[i][j]
+    #                SubTask.append(i)
+    #         i += 1
+    #     j += 1
+    # print(SubTask)
+    while i < len(decision) - 1:
+        j = 0
+        while j < len(decision) - 1:
             # print(len(SubTask))
             # print(decision[i])
             if len(SubTask) == 0 and decision[i] == 1:
                 # print("entre")
-                weight += profit[1][i]*decision[i]*matriz[i][j]
+                weight += profit[0][i]*decision[i]*matriz[i][j]
                 # print(weight)
-                SubTask.append(i)
+                SubTask.append(j)
             elif decision[i] == 1:
                 igual = False
                 for index in SubTask:
-                    if index == i:
-                       igual = True
-                       break
+                    if index == j:
+                        igual = True
+                        break
                 if igual == False:
-                   weight += profit[1][i]*decision[i]*matriz[i][j]
-                   SubTask.append(i)
+                    weight += profit[0][i]*decision[i]*matriz[i][j]
+                    SubTask.append(j)
             j += 1
         i=i+1
-    # print(SubTask)
     return weight
 
 def restriccion(decision,peso,matriz,profit):# calcula si dicha decision(variable binaria) cumple la restriccion
