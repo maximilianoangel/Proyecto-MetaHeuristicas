@@ -6,8 +6,8 @@ import time
 Semilla=0
 A=np.loadtxt("matriz600.txt",dtype="int")# matriz con las m tareas y n subtareas, con n=m
 B=np.loadtxt("profile600.txt",dtype="int") # profit en [0][x], peso/costo en [1][x]
-# print(A[0][0])
-# print(len(B[0]))
+C=np.loadtxt("matriz100.txt",dtype="int")
+D=np.loadtxt("profile100.txt",dtype="int")
 BestFO = 0
 BestLocalFO = 0
 BestPo = []
@@ -17,8 +17,8 @@ BestLocalWeight = 999999
 Pob = []
 NewPob = []
 Peso = 109943
-# Peso = 25630
-TamañoPo = 100
+Peso2 = 11223
+TamañoPo = 200
 
 def var_decision(X,profit):
     if len(X) == 0:
@@ -28,32 +28,6 @@ def var_decision(X,profit):
 def FO(decision,matriz,profit): # calcula la Funcion Objetivo con dicha decision
     i = 0
     aux = 0
-    # SubTask = []
-    # print(decision)
-    # while i < len(decision) - 1:
-    #    j = 0
-    #    while j < len(decision) - 1:
-    #        # print(len(SubTask))
-    #        # print(decision[i])
-    #        if len(SubTask) == 0 and decision[i] == 1:
-    #            # print("entre")
-    #            aux += profit[0][i]*decision[i]*matriz[i][j]
-    #            # print(aux)
-    #            SubTask.append(j)
-    #        elif decision[i] == 1:
-    #            igual = False
-    #            for index in SubTask:
-    #                if index == j:
-    #                    igual = True
-    #                    break
-    #             if igual == False:
-    #                aux += profit[0][i]*decision[i]*matriz[i][j]
-    #                SubTask.append(j)
-    #         j += 1
-    #     i=i+1
-    # print(SubTask)
-    # return aux
-
     while i<len(profit[0])-1:
         aux=aux+(decision[i]*profit[0][i])
         i=i+1
@@ -62,23 +36,12 @@ def FO(decision,matriz,profit): # calcula la Funcion Objetivo con dicha decision
 def Weight(decision, matriz, profit): # Calcula el peso de las tareas
     i = 0
     weight = 0
-    # while i<len(decision)-1:
-    #     j=0
-    #     while j<len(decision)-1:
-    #         weight += profit[1][j]*matriz[i][j]*decision[j]
-    #         j += 1
-    #     i += 1
-    # return weight
     SubTask = []
     while i < len(decision) - 1:
         j = 0
         while j < len(decision) - 1:
-            # print(len(SubTask))
-            # print(decision[i])
             if len(SubTask) == 0 and decision[i] == 1:
-                # print("entre")
                 weight += profit[1][j]*decision[i]*matriz[i][j]
-                # print(weight)
                 SubTask.append(j)
             elif decision[i] == 1:
                 igual = False
@@ -94,17 +57,6 @@ def Weight(decision, matriz, profit): # Calcula el peso de las tareas
     return weight
 
 def restriccion(decision,peso,matriz,profit):# calcula si dicha decision(variable binaria) cumple la restriccion
-    # i=0
-    # aux=0
-    # while i<len(decision)-1:
-    #     if aux<=peso:
-    #         j=0
-    #         while j<len(decision)-1:
-    #             aux=aux+(profit[1][i]*matriz[i][j]*decision[i])
-    #             j=j+1
-    #     else:
-    #         return 0
-    #     i=i+1
     weight = Weight(decision, matriz, profit)
     if weight > peso:
         return 0
@@ -173,10 +125,8 @@ def PoblacionInicial(matriz,profit,peso,poblacion,proba): # Genera la poblacion 
         i=i+1
     end=time.time()
     for i in Pob:
-        # print(i)
-        MejorFOPob = FO(i,A,B)
+        MejorFOPob = FO(i,matriz,profit)
         MenorWeight = Weight(i, matriz, profit)
-        # print("FO: ", MejorFOPob)
         if MejorFOPob > BestFO:
             BestFO = MejorFOPob
             BestPo = i
@@ -184,10 +134,6 @@ def PoblacionInicial(matriz,profit,peso,poblacion,proba): # Genera la poblacion 
         elif MejorFOPob == BestFO and MenorWeight < BestWeight:
             BestPo = i
             BestWeight = MenorWeight
-    # Pob = 0
-    # print("FO2: ", FO2(i,A,B))
-    # print("poblacion "+str(len(pob)))
-    # print("tiempo greedy "+str(end-start))
 
 def Mutacion(hijo): # Probabilidad de 1% de que haya motacion en un solo bit
     global Semilla
@@ -298,12 +244,6 @@ def Solver(A,B,Size,Tamaño):
         if len(NewPob) == Tamaño:
             if count == 30:
                 break
-            # proba=[]
-            # Pob = NewPob[:]
-            # seleccion1=ruleta_greedy(proba[:])
-            # seleccion2=ruleta_greedy(proba[:])
-            # print(seleccion1)
-            # print(seleccion2)
             Pob = NewPob[:]
             NewPob = []
             if BestLocalFO > BestFO:
@@ -311,36 +251,24 @@ def Solver(A,B,Size,Tamaño):
                 BestPo = BestLocalPO
                 BestWeight = BestLocalWeight
             count += 1
-            # elif BestLocalFO == BestFO and BestLocalWeight < BestWeight:
-            #     BestPo = BestLocalPO
-            #     BestWeight = BestLocalWeight
         else:
-            # NewPob = ruleta_greedy(proba)
-            # break
             seleccion1 = Torneo(Tamaño,A,B)
             seleccion2 = Torneo(Tamaño,A,B)
-            # print(seleccion1)
-            # print(seleccion2)
             hijos = Cruzamiento(seleccion1[:], seleccion2[:],A,B)
             NewPob.append(hijos[0])
             NewPob.append(hijos[1])
         generacion=generacion+1
 
-# start=time.time()
-# Solver(A,B,Peso,TamañoPo)
-# end=time.time()
-# print("En total el algoritmo genetico(incluido el greedy) con tamaño "+ str(len(B[0]))+" se demoro: "+str(end-start)+" segundos")
-# print("BestFO: ", BestFO)
-# print("Weight: ", BestWeight)
-# print(len(BestPo))
-# print(BestPo)
-# resultado_esperado=[0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]
-# # resultado_esperado=[0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,1,0,0,1,1,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,1,1,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,0]
-# print("Resultado FO esperado: "+str(FO(resultado_esperado,A,B)))
-# print("Resultado peso esperado: "+str(Weight(resultado_esperado,A,B)))
 
-# Falta que haya un tope de generaciones o hasta que converja
-
-
-a = "Hola"
-print('a ${a}')
+start=time.time()
+Solver(A,B,Peso,TamañoPo)
+end=time.time()
+print("En total el algoritmo genetico(incluido el greedy) con tamaño "+ str(len(B[0]))+" se demoro: "+str(end-start)+" segundos")
+print("BestFO: ", BestFO)
+print("Weight: ", BestWeight)
+print(len(BestPo))
+print(BestPo)
+res1=[0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]
+res2=[0,1,1,1,0,0,0,1,0,0,0,1,1,0,0,0,0,1,0,1,0,1,0,0,0,0,1,1,0,0,0,0,0,1,1,1,0,0,0,0,0,1,1,1,0,0,0,0,0,0,0,1,0,0,1,0,1,1,0,0,1,1,0,0,0,1,0,0,0,1,0,0,1,0,0,1,0,1,0,0,1,1,1,1,1,0,0,0,1,1,1,0,0,1,1,1,1,1,0,1]
+print("Resultado FO esperado: "+str(FO(res1,A,B)))
+print("Resultado peso esperado: "+str(Weight(res1,A,B)))
