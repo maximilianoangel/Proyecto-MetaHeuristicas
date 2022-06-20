@@ -17,6 +17,7 @@ BestLocalWeight = 999999
 Pob = []
 NewPob = []
 Peso = 109943
+# Peso = 25630
 TamañoPo = 100
 
 def var_decision(X,profit):
@@ -69,29 +70,6 @@ def Weight(decision, matriz, profit): # Calcula el peso de las tareas
     #     i += 1
     # return weight
     SubTask = []
-    # print(decision)
-    # while j < len(decision) - 1:
-    #     i = 0
-    #     while i < len(decision) - 1:
-    #         # print(len(SubTask))
-    #         # print(decision[i])
-    #         if len(SubTask) == 0 and decision[i] == 1:
-    #             # print("entre")
-    #             weight += profit[1][i]*decision[i]*matriz[i][j]
-    #             # print(weight)
-    #             SubTask.append(i)
-    #         elif decision[i] == 1:
-    #             igual = False
-    #             for index in SubTask:
-    #                 if index == i:
-    #                    igual = True
-    #                    break
-    #             if igual == False:
-    #                weight += profit[1][i]*decision[i]*matriz[i][j]
-    #                SubTask.append(i)
-    #         i += 1
-    #     j += 1
-    # print(SubTask)
     while i < len(decision) - 1:
         j = 0
         while j < len(decision) - 1:
@@ -99,7 +77,7 @@ def Weight(decision, matriz, profit): # Calcula el peso de las tareas
             # print(decision[i])
             if len(SubTask) == 0 and decision[i] == 1:
                 # print("entre")
-                weight += profit[0][i]*decision[i]*matriz[i][j]
+                weight += profit[1][j]*decision[i]*matriz[i][j]
                 # print(weight)
                 SubTask.append(j)
             elif decision[i] == 1:
@@ -109,7 +87,7 @@ def Weight(decision, matriz, profit): # Calcula el peso de las tareas
                         igual = True
                         break
                 if igual == False:
-                    weight += profit[0][i]*decision[i]*matriz[i][j]
+                    weight += profit[1][j]*decision[i]*matriz[i][j]
                     SubTask.append(j)
             j += 1
         i=i+1
@@ -316,7 +294,7 @@ def Solver(A,B,Size,Tamaño):
     global BestWeight
     global BestLocalWeight
     count = 0
-    while generacion<100:
+    while generacion<500:
         if len(NewPob) == Tamaño:
             if count == 30:
                 break
@@ -348,16 +326,21 @@ def Solver(A,B,Size,Tamaño):
             NewPob.append(hijos[1])
         generacion=generacion+1
 
-start=time.time()
-Solver(A,B,Peso,TamañoPo)
-end=time.time()
-print("En total el algoritmo genetico(incluido el greedy) con tamaño "+ str(len(B[0]))+" se demoro: "+str(end-start)+" segundos")
-print("BestFO: ", BestFO)
-print("Weight: ", BestWeight)
-print(len(BestPo))
-print(BestPo)
-resultado_esperado=[0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]
-print("Resultado FO esperado: "+str(FO(resultado_esperado,A,B)))
-print("Resultado peso esperado: "+str(Weight(resultado_esperado,A,B)))
+# start=time.time()
+# Solver(A,B,Peso,TamañoPo)
+# end=time.time()
+# print("En total el algoritmo genetico(incluido el greedy) con tamaño "+ str(len(B[0]))+" se demoro: "+str(end-start)+" segundos")
+# print("BestFO: ", BestFO)
+# print("Weight: ", BestWeight)
+# print(len(BestPo))
+# print(BestPo)
+# resultado_esperado=[0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0]
+# # resultado_esperado=[0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,1,0,0,0,0,1,0,0,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,1,1,0,0,1,1,0,1,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,1,0,0,0,0,0,1,0,1,1,0,0,0,0,0,0,1,0,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,1,0,0,0,0,0,1,0,0,0,0,0,1,0,1,1,0,0,0,0,0,0,0,0]
+# print("Resultado FO esperado: "+str(FO(resultado_esperado,A,B)))
+# print("Resultado peso esperado: "+str(Weight(resultado_esperado,A,B)))
 
 # Falta que haya un tope de generaciones o hasta que converja
+
+
+a = "Hola"
+print('a ${a}')
