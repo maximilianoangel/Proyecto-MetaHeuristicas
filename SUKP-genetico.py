@@ -79,7 +79,7 @@ def Weight(decision, matriz, profit): # Calcula el peso de las tareas
                 # print("entre")
                 weight += profit[1][i]*decision[i]*matriz[i][j]
                 # print(weight)
-                SubTask.append(j)
+                SubTask.append(i)
             elif decision[i] == 1:
                 igual = False
                 for index in SubTask:
@@ -88,7 +88,7 @@ def Weight(decision, matriz, profit): # Calcula el peso de las tareas
                        break
                 if igual == False:
                    weight += profit[1][i]*decision[i]*matriz[i][j]
-                   SubTask.append(j)
+                   SubTask.append(i)
             j += 1
         i=i+1
     # print(SubTask)
