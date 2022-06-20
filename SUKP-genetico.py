@@ -27,31 +27,31 @@ def var_decision(X,profit):
 def FO(decision,matriz,profit): # calcula la Funcion Objetivo con dicha decision
     i = 0
     aux = 0
-    #SubTask = []
+    # SubTask = []
     # print(decision)
-    #while i < len(decision) - 1:
-     #   j = 0
-      #  while j < len(decision) - 1:
-       #     # print(len(SubTask))
-        #    # print(decision[i])
-         #   if len(SubTask) == 0 and decision[i] == 1:
-          #      # print("entre")
-           #     aux += profit[0][i]*decision[i]*matriz[i][j]
-            #    # print(aux)
-             #   SubTask.append(j)
-           # elif decision[i] == 1:
-            #    igual = False
-             #   for index in SubTask:
-              #      if index == j:
-               #         igual = True
-                #        break
-                #if igual == False:
-                 #   aux += profit[0][i]*decision[i]*matriz[i][j]
-                  #  SubTask.append(j)
-            #j += 1
-        #i=i+1
+    # while i < len(decision) - 1:
+    #    j = 0
+    #    while j < len(decision) - 1:
+    #        # print(len(SubTask))
+    #        # print(decision[i])
+    #        if len(SubTask) == 0 and decision[i] == 1:
+    #            # print("entre")
+    #            aux += profit[0][i]*decision[i]*matriz[i][j]
+    #            # print(aux)
+    #            SubTask.append(j)
+    #        elif decision[i] == 1:
+    #            igual = False
+    #            for index in SubTask:
+    #                if index == j:
+    #                    igual = True
+    #                    break
+    #             if igual == False:
+    #                aux += profit[0][i]*decision[i]*matriz[i][j]
+    #                SubTask.append(j)
+    #         j += 1
+    #     i=i+1
     # print(SubTask)
-    #return aux
+    # return aux
 
     while i<len(profit[0])-1:
         aux=aux+(decision[i]*profit[0][i])
@@ -59,28 +59,56 @@ def FO(decision,matriz,profit): # calcula la Funcion Objetivo con dicha decision
     return aux
 
 def Weight(decision, matriz, profit): # Calcula el peso de las tareas
-    i = 0
+    j = 0
     weight = 0
-    while i<len(decision)-1:
-        j=0
-        while j<len(decision)-1:
-            weight += profit[1][j]*matriz[i][j]*decision[j]
+    # while i<len(decision)-1:
+    #     j=0
+    #     while j<len(decision)-1:
+    #         weight += profit[1][j]*matriz[i][j]*decision[j]
+    #         j += 1
+    #     i += 1
+    # return weight
+    SubTask = []
+    # print(decision)
+    while j < len(decision) - 1:
+        i = 0
+        while i < len(decision) - 1:
+            # print(len(SubTask))
+            # print(decision[i])
+            if len(SubTask) == 0 and decision[i] == 1:
+                # print("entre")
+                weight += profit[1][i]*decision[i]*matriz[i][j]
+                # print(weight)
+                SubTask.append(j)
+            elif decision[i] == 1:
+                igual = False
+                for index in SubTask:
+                    if index == i:
+                       igual = True
+                       break
+                if igual == False:
+                   weight += profit[1][i]*decision[i]*matriz[i][j]
+                   SubTask.append(j)
             j += 1
-        i += 1
+        i=i+1
+    # print(SubTask)
     return weight
 
-def restriccion(decision,peso,matriz,profit):#calcula si dicha decision(variable binaria) cumple la restriccion
-    i=0
-    aux=0
-    while i<len(decision)-1:
-        if aux<=peso:
-            j=0
-            while j<len(decision)-1:
-                aux=aux+(profit[1][i]*matriz[i][j]*decision[i])
-                j=j+1
-        else:
-            return 0
-        i=i+1
+def restriccion(decision,peso,matriz,profit):# calcula si dicha decision(variable binaria) cumple la restriccion
+    # i=0
+    # aux=0
+    # while i<len(decision)-1:
+    #     if aux<=peso:
+    #         j=0
+    #         while j<len(decision)-1:
+    #             aux=aux+(profit[1][i]*matriz[i][j]*decision[i])
+    #             j=j+1
+    #     else:
+    #         return 0
+    #     i=i+1
+    weight = Weight(decision, matriz, profit)
+    if weight > peso:
+        return 0
     return 1
 
 def Tareas_resueltas(indice,matriz,profit): #suma cuantas tareas son resueltas en la posicion indice de la matriz
